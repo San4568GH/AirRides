@@ -1,0 +1,236 @@
+header{
+  width:100%;
+  background-color: blue;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  
+  text-decoration: solid;
+  color: white;
+}
+
+header nav{
+  display: flex;
+  gap:15px;
+}
+header a{
+  color: white;
+}
+
+header a:hover{
+  color:black;
+}
+header a.logo:hover{
+  color: inherit;
+}
+
+header a.logo{
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  text-decoration: none;
+
+}
+
+.Search {
+  text-align: center;
+  padding: 20px;
+}
+
+.flight-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group .react-datepicker-wrapper {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+button.searchsub {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* .react-toggle {
+  margin-left: 10px;
+   vertical-align: middle; 
+} */
+
+.react-toggle {
+  margin: 0 5px;
+}
+
+.react-toggle-track {
+  background-color: #e4e4e4;
+}
+
+.react-toggle--checked .react-toggle-track {
+  background-color: #4caf50;
+}
+
+.react-toggle-thumb {
+  border-color: #4caf50;
+}
+
+.react-toggle--checked .react-toggle-thumb {
+  border-color: #fff;
+}
+
+.toggle-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.toggle-group label {
+  margin: 0 45px;
+}
+
+form{
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+form.login h1,
+form.register h1 {
+  text-align: center;
+  font-size: 3rem;
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 5px;
+  /* background-color: white; */
+  border: 3px solid #ddd;
+  border-radius: 8px;
+}
+
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.4em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  align-items: center;
+  
+}
+
+.flight-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.flight-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  border: 1px solid #49494a;
+  border-radius: 8px;
+  width: 250px;
+  background-color: #f9f9f9;
+  text-align: left;
+}
+
+.flight-card div {
+  margin-bottom: 8px;
+}
+
+.book-now {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.book-now:hover {
+  background-color: #0056b3;
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 4px;
+  padding: 20px;
+  outline: none;
+  width: 300px;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.confirm-booking {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.confirm-booking:hover {
+  background-color: #218838;
+}
+
+.close-modal {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.close-modal:hover {
+  background-color: #c82333;
+}
