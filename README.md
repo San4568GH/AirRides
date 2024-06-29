@@ -14,15 +14,21 @@ A Flight Booking MERN Based Web application.
 ## Steps to open app
 
 1. Clone the repository:
-   ```git clone https://github.com/your-username/AirRides.git```
 
+   ```git clone https://github.com/your-username/AirRides.git```
    
+   or download the .zip file and extract.
+    
 
 2. Change directory to frontend->client:
  
    ```cd frontend```
 
    ```cd client```
+
+3. Install dependencies:
+
+   ```npm install```
 
 3. Run frontend server:
  
@@ -38,7 +44,7 @@ A Flight Booking MERN Based Web application.
 
 5. Start backend server:
 
-```nodemon server.js```
+   ```nodemon server.js```
 
 ---
 
