@@ -18,17 +18,17 @@ A Flight Booking MERN Based Web application.
 
    
 
-3. Change directory to frontend->client:
-4. 
+2. Change directory to frontend->client:
+ 
    ```cd frontend```
 
    ```cd client```
 
-5. Run frontend server:
-6. 
+3. Run frontend server:
+ 
    ```npm run dev```
 
-7. Navigate to backend directory in terminal
+4. Navigate to backend directory in terminal
 
    ```cd..```
 
@@ -36,7 +36,7 @@ A Flight Booking MERN Based Web application.
 
    ```cd backend```
 
-8. Start backend server:
+5. Start backend server:
 
 ```nodemon server.js```
 
