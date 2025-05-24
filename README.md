@@ -15,7 +15,7 @@ A Flight Booking MERN Based Web application.
 
 1. Clone the repository:
 
-   ```git clone https://github.com/your-username/AirRides.git```
+   ```git clone https://github.com/San4568GH/AirRides.git```
    
    or download the .zip file and extract.
     
