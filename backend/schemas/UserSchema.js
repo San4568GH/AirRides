@@ -22,6 +22,10 @@ const bookedFlightSchema = new Schema({
 
 
 const userSchema = new Schema({
+  name: {
+    type: String,
+    trim: true,
+  },
   username: {
     type: String,
     required: true,
@@ -38,6 +42,24 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  phone: {
+    type: String,
+    trim: true,
+  },
+  age: {
+    type: Number,
+    min: 0,
+    max: 120,
+  },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Other'],
+  },
+  role: {
+    type: String,
+    enum: ['passenger', 'staff', 'admin'],
+    default: 'passenger',
   },
   bookedFlights: [bookedFlightSchema],
 }, {

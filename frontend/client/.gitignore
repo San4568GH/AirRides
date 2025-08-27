@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deprecated admin file (replaced by AdminDashboard.jsx)
+src/Pages/Admin.jsx
+
+# Extra SearchForm backup files
+src/Pages/SearchForm_new.jsx
+src/Pages/SearchForm_fixed.jsx
+src/Pages/SearchForm_backup.jsx

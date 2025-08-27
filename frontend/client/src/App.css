@@ -1,84 +1,144 @@
-header{
-  width:100%;
-  background-color: blue;
-  padding: 20px;
+/* Removed Tailwind directives - now using Chakra UI */
+
+/* --- HEADER --- */
+header {
+  width: 100%;
+  background: linear-gradient(90deg, #283593 0%, #1976d2 100%);
+  padding: 20px 40px;
   box-sizing: border-box;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  
-  text-decoration: solid;
-  color: white;
+  color: #fff;
+  border-bottom: 2px solid #1a237e;
+  min-height: 72px;
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 12px 0 rgba(25, 118, 210, 0.08);
 }
 
-header nav{
+header nav {
   display: flex;
-  gap:15px;
+  gap: 20px;
 }
-header a{
+
+header a {
   color: white;
-}
-
-header a:hover{
-  color:black;
-}
-header a.logo:hover{
-  color: inherit;
-}
-
-header a.logo{
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  font-weight: 500;
   text-decoration: none;
-
+  transition: color 0.2s;
+  padding: 4px 10px;
+  border-radius: 6px;
 }
 
+header a:hover {
+  color: #1976d2;
+  background: #fff;
+}
+
+header a.logo {
+  font-family: 'Poppins', 'Montserrat', Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  box-shadow: none;
+  transition: color 0.2s;
+}
+
+header a.logo:hover {
+  color: #fff;
+  background: none;
+}
+
+/* --- SEARCH --- */
 .Search {
   text-align: center;
-  padding: 20px;
+  padding: 32px 0 24px 0;
+  background: linear-gradient(90deg, #e3f2fd 0%, #fff 100%);
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.04);
 }
 
+/* --- FLIGHT FORM --- */
 .flight-form {
-  max-width: 400px;
+  max-width: 420px;
   margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
+  padding: 28px 24px;
+  border: 1.5px solid #90caf9;
+  border-radius: 16px;
+  background-color: #f5faff;
+  box-shadow: 0 4px 16px 0 rgba(25, 118, 210, 0.07);
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 7px;
+  font-weight: 500;
+  color: #283593;
 }
 
 .form-group input,
 .form-group .react-datepicker-wrapper {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   box-sizing: border-box;
+  border: 2px solid #bbdefb;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
-button.searchsub {
-  padding: 10px 20px;
+.form-group input:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+/* --- BUTTONS --- */
+button,
+button.searchsub,
+.book-now,
+.confirm-booking,
+.close-modal {
+  border-radius: 8px;
   border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
+  padding: 0.6em 1.5em;
+  font-size: 1.05em;
+  font-weight: 600;
+  font-family: inherit;
+  background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+  color: #fff;
   cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.08);
+  margin-top: 8px;
 }
 
-button:hover {
-  background-color: #0056b3;
+button:hover,
+button.searchsub:hover,
+.book-now:hover,
+.confirm-booking:hover {
+  background: linear-gradient(90deg, #1565c0 0%, #42a5f5 100%);
+  box-shadow: 0 4px 16px 0 rgba(25, 118, 210, 0.12);
 }
 
-/* .react-toggle {
-  margin-left: 10px;
-   vertical-align: middle; 
-} */
+.close-modal {
+  background: linear-gradient(90deg, #d32f2f 0%, #f44336 100%);
+}
 
+.close-modal:hover {
+  background: linear-gradient(90deg, #b71c1c 0%, #e57373 100%);
+}
+
+/* --- TOGGLE --- */
 .react-toggle {
   margin: 0 5px;
 }
@@ -103,85 +163,76 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 15px;
+  margin-top: 18px;
 }
 
 .toggle-group label {
   margin: 0 45px;
 }
 
-form{
-  max-width: 400px;
+/* --- FORMS --- */
+form {
+  max-width: 420px;
   margin: 0 auto;
 }
 
 form.login h1,
 form.register h1 {
   text-align: center;
-  font-size: 3rem;
+  font-size: 2.5rem;
+  color: #283593;
+  margin-bottom: 18px;
 }
 
 input {
   display: block;
   width: 100%;
-  padding: 10px;
-  margin-bottom: 5px;
-  /* background-color: white; */
-  border: 3px solid #ddd;
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 2px solid #bbdefb;
   border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s;
 }
 
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.4em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  align-items: center;
-  
+input:focus {
+  border-color: #1976d2;
+  outline: none;
 }
 
+/* --- FLIGHT RESULTS --- */
 .flight-results {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 28px;
 }
 
 .flight-card {
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  border: 1px solid #49494a;
-  border-radius: 8px;
-  width: 250px;
-  background-color: #f9f9f9;
+  padding: 20px 18px;
+  border: 1.5px solid #90caf9;
+  border-radius: 12px;
+  width: 270px;
+  background-color: #f5faff;
   text-align: left;
+  box-shadow: 0 2px 8px 0 rgba(25, 118, 210, 0.06);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.flight-card:hover {
+  border-color: #1976d2;
+  box-shadow: 0 6px 24px 0 rgba(25, 118, 210, 0.13);
 }
 
 .flight-card div {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.book-now {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.book-now:hover {
-  background-color: #0056b3;
-}
-
+/* --- MODAL --- */
 .modal {
   position: absolute;
   top: 50%;
@@ -190,11 +241,12 @@ button {
   bottom: auto;
   margin-right: -50%;
   transform: translate(-50%, -50%);
-  background: white;
-  border-radius: 4px;
-  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 28px 24px;
   outline: none;
-  width: 300px;
+  width: 340px;
+  box-shadow: 0 8px 32px 0 rgba(25, 118, 210, 0.18);
 }
 
 .overlay {
@@ -203,34 +255,71 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(25, 33, 71, 0.75);
+}
+
+/* --- BOOKING BUTTONS --- */
+.book-now {
+  background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin-top: 10px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.book-now:hover {
+  background: linear-gradient(90deg, #1565c0 0%, #42a5f5 100%);
+  box-shadow: 0 4px 16px 0 rgba(25, 118, 210, 0.12);
 }
 
 .confirm-booking {
-  background-color: #28a745;
+  background: linear-gradient(90deg, #43a047 0%, #66bb6a 100%);
   color: #fff;
   border: none;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-top: 10px;
   margin-right: 10px;
+  font-weight: 600;
+  font-size: 1.1em;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .confirm-booking:hover {
-  background-color: #218838;
+  background: linear-gradient(90deg, #388e3c 0%, #81c784 100%);
+  box-shadow: 0 4px 16px 0 rgba(67, 160, 71, 0.12);
 }
 
 .close-modal {
-  background-color: #dc3545;
+  background: linear-gradient(90deg, #d32f2f 0%, #f44336 100%);
   color: #fff;
   border: none;
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.1em;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 .close-modal:hover {
-  background-color: #c82333;
+  background: linear-gradient(90deg, #b71c1c 0%, #e57373 100%);
+  box-shadow: 0 4px 16px 0 rgba(211, 47, 47, 0.12);
+}
+
+/* --- GENERAL CLEANUP --- */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #e3e3e3;
+}
+::-webkit-scrollbar-thumb {
+  background: #90caf9;
+  border-radius: 8px;
 }
