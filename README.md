@@ -22,6 +22,7 @@ A comprehensive **MERN Stack** flight booking web application with advanced admi
 - **✈️ Flight Management** - Create, edit, and manage flight schedules
 - **📊 Booking Analytics** - View and manage customer bookings
 
+<<<<<<< HEAD
 ## 🛠️ Technology Stack
 
 ### Frontend
@@ -41,6 +42,28 @@ A comprehensive **MERN Stack** flight booking web application with advanced admi
 ### Payment & Security
 - **RazorPay** 2.9+ - Payment gateway integration
 - **CORS** 2.8+ - Cross-origin resource sharing
+=======
+1. Clone the repository:
+
+   ```git clone https://github.com/San4568GH/AirRides.git```
+   
+   or download the .zip file and extract.
+    
+
+2. Change directory to frontend->client:
+ 
+   ```cd frontend```
+
+   ```cd client```
+
+3. Install dependencies:
+
+   ```npm install```
+
+3. Run frontend server:
+ 
+   ```npm run dev```
+>>>>>>> 233ec62d146168eb93678d303cb8f3e5486b45a0
 
 ## 🚀 Installation & Setup
 
@@ -66,6 +89,7 @@ Fill in your configuration in `.env`:
 # Database
 MONGO_URL=your_mongodb_connection_string
 
+<<<<<<< HEAD
 # Payment Gateway
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
@@ -120,6 +144,9 @@ AirRides/
 ├── .env.example        # Environment template
 └── README.md          # This file
 ```
+=======
+   ```nodemon server.js```
+>>>>>>> 233ec62d146168eb93678d303cb8f3e5486b45a0
 
 ---
 
