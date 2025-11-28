@@ -41,3 +41,7 @@ Thumbs.db
 # Documentation and debugging files (project-specific)
 README-Detailed.md
 PROJECT_DEBUGGING_LOG.md
+IMPLEMENTATION_SUMMARY.md
+DEPLOYMENT_CHECKLIST.md
+ARCHITECTURE_DIAGRAM.md
+backend/PAYMENT_RELIABILITY.md

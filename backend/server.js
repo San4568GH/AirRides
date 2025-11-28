@@ -8,10 +8,19 @@ import cookieParser from 'cookie-parser';
 import CitySchema from './schemas/CitySchema.js';
 import UserSchema from './schemas/UserSchema.js';
 import Flight from './schemas/FlightSchema.js';
+import { PaymentLog } from './schemas/PaymentLogSchema.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import config from './utils/config.js';
 import { generateUniqueBookingId } from './utils/bookingUtils.js';
+import { 
+  logPaymentAttempt, 
+  markPaymentProcessed, 
+  markPaymentFailed,
+  recoverOrphanedPayments,
+  getPaymentStats
+} from './middleware/paymentRecovery.js';
+import paymentMonitor from './services/paymentMonitor.js';
 
 
 const app = express();
@@ -56,7 +65,25 @@ mongoose.connect(config.database.mongoUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected successfully!'))
+.then(() => {
+  console.log('MongoDB connected successfully!');
+  
+  // Start payment monitoring
+  paymentMonitor.startMonitoring();
+  
+  // Start payment recovery job (runs every 5 minutes)
+  setInterval(async () => {
+    const recovered = await recoverOrphanedPayments();
+    if (recovered > 0) {
+      console.log(`🔄 Payment recovery job completed: ${recovered} payments recovered`);
+    }
+  }, 5 * 60 * 1000); // 5 minutes
+  
+  // Log metrics every hour
+  setInterval(() => {
+    paymentMonitor.logMetrics();
+  }, 60 * 60 * 1000); // 1 hour
+})
 .catch((error) => console.error('MongoDB connection error:', error));
 
 // Register endpoint
@@ -516,15 +543,32 @@ app.post('/store-booking', async (req, res) => {
 app.post('/verify-payment', async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, flightId, passengers, userId } = req.body;
 
+  // Start MongoDB session for transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     // Validate required parameters
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      await session.abortTransaction();
       return res.status(400).json({ 
         status: 'failure', 
         error: 'BAD_REQUEST_ERROR',
         description: 'Missing required payment verification parameters' 
       });
     }
+
+    // Log payment attempt for recovery
+    const bookingDetails = {
+      flightNumber: '',
+      from: '',
+      to: '',
+      departureTime: null,
+      arrivalTime: null,
+      airline: '',
+      price: 0,
+      passengers: passengers
+    };
 
     // Verify payment signature according to Razorpay documentation
     const hmac = crypto.createHmac('sha256', config.razorpay.keySecret);
@@ -537,12 +581,73 @@ app.post('/verify-payment', async (req, res) => {
       signature_match: generatedSignature === razorpay_signature
     });
 
-    if (generatedSignature === razorpay_signature) {
-      // Payment signature is valid - proceed with booking
+    if (generatedSignature !== razorpay_signature) {
+      await session.abortTransaction();
+      await markPaymentFailed(razorpay_payment_id, 'Invalid signature');
       
-      // Update flight seats
-      const flight = await Flight.findById(flightId);
-      if (!flight) {
+      console.log('❌ Payment signature verification failed');
+      return res.status(400).json({ 
+        status: 'failure', 
+        error: 'SIGNATURE_VERIFICATION_FAILED',
+        description: 'Invalid payment signature' 
+      });
+    }
+
+    // Payment signature is valid - proceed with booking
+    
+    // Check for duplicate payment (idempotency)
+    const user = await UserSchema.findById(userId).session(session);
+    if (!user) {
+      await session.abortTransaction();
+      await markPaymentFailed(razorpay_payment_id, 'User not found');
+      
+      return res.status(404).json({ 
+        status: 'failure', 
+        error: 'NOT_FOUND',
+        description: 'User not found' 
+      });
+    }
+
+    // Check if booking already exists for this payment
+    const existingBooking = user.bookedFlights?.find(
+      b => b.paymentDetails?.razorpay_payment_id === razorpay_payment_id
+    );
+
+    if (existingBooking) {
+      await session.commitTransaction();
+      console.log('⚠️  Idempotent request - booking already exists:', existingBooking.bookingId);
+      
+      return res.status(200).json({ 
+        status: 'success',
+        message: 'Booking already confirmed (idempotent request)',
+        booking_id: existingBooking.bookingId,
+        payment_id: razorpay_payment_id,
+        idempotent: true
+      });
+    }
+
+    // Atomic seat update with availability check
+    const flight = await Flight.findOneAndUpdate(
+      { 
+        _id: flightId,
+        seatsAvailable: { $gte: passengers } // Only update if enough seats
+      },
+      { 
+        $inc: { seatsAvailable: -passengers } // Decrement seats atomically
+      },
+      { 
+        new: true,
+        session // Include in transaction
+      }
+    );
+
+    if (!flight) {
+      // Either flight not found or not enough seats
+      const flightExists = await Flight.findById(flightId).session(session);
+      await session.abortTransaction();
+      
+      if (!flightExists) {
+        await markPaymentFailed(razorpay_payment_id, 'Flight not found');
         return res.status(404).json({ 
           status: 'failure', 
           error: 'NOT_FOUND',
@@ -550,84 +655,102 @@ app.post('/verify-payment', async (req, res) => {
         });
       }
 
-      if (flight.seatsAvailable < passengers) {
-        return res.status(400).json({ 
-          status: 'failure', 
-          error: 'INSUFFICIENT_SEATS',
-          description: 'Not enough seats available' 
-        });
-      }
-
-      await Flight.findByIdAndUpdate(flightId, { $inc: { seatsAvailable: -passengers } });
-
-      // Store booking information
-      const generateBookingId = () => {
-        return generateUniqueBookingId();
-      };
-
-      const bookingId = generateBookingId();
-
-      const bookedFlight = {
-        bookingId: bookingId,
-        flightId: flight._id,
-        flightNumber: flight.flightNumber,
-        from: flight.from,
-        to: flight.to,
-        departureTime: flight.departureTime,
-        arrivalTime: flight.arrivalTime,
-        airline: flight.airline,
-        price: flight.price,
-        nonStop: flight.nonStop,
-        bookingDate: new Date(),
-        passengers: passengers,
-        paymentDetails: {
-          razorpay_order_id,
-          razorpay_payment_id,
-          razorpay_signature
-        }
-      };
-
-      const user = await UserSchema.findById(userId);
-      if (!user) {
-        return res.status(404).json({ 
-          status: 'failure', 
-          error: 'NOT_FOUND',
-          description: 'User not found' 
-        });
-      }
-
-      // Ensure bookedFlights array exists
-      if (!user.bookedFlights) {
-        user.bookedFlights = [];
-      }
-
-      user.bookedFlights.push(bookedFlight);
-      await user.save();
-
-      res.status(200).json({ 
-        status: 'success',
-        message: 'Payment verified and booking confirmed successfully',
-        booking_id: bookedFlight.bookingId,
-        payment_id: razorpay_payment_id
-      });
-      
-    } else {
-      console.log('❌ Payment signature verification failed');
-      res.status(400).json({ 
+      await markPaymentFailed(razorpay_payment_id, 'Insufficient seats');
+      return res.status(409).json({ 
         status: 'failure', 
-        error: 'SIGNATURE_VERIFICATION_FAILED',
-        description: 'Invalid payment signature' 
+        error: 'SEATS_UNAVAILABLE',
+        description: `Sorry, only ${flightExists.seatsAvailable} seat(s) available. Another user just booked this flight.` 
       });
     }
+
+    // Generate booking ID
+    const bookingId = generateUniqueBookingId();
+
+    // Create booking
+    const bookedFlight = {
+      bookingId: bookingId,
+      flightId: flight._id,
+      flightNumber: flight.flightNumber,
+      from: flight.from,
+      to: flight.to,
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      airline: flight.airline,
+      price: flight.price,
+      nonStop: flight.nonStop,
+      bookingDate: new Date(),
+      passengers: passengers,
+      paymentDetails: {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature
+      },
+      status: 'CONFIRMED'
+    };
+
+    // Update booking details for logging
+    Object.assign(bookingDetails, {
+      flightNumber: flight.flightNumber,
+      from: flight.from,
+      to: flight.to,
+      departureTime: flight.departureTime,
+      arrivalTime: flight.arrivalTime,
+      airline: flight.airline,
+      price: flight.price
+    });
+
+    // Log payment attempt
+    await logPaymentAttempt({
+      razorpay_payment_id,
+      razorpay_order_id,
+      razorpay_signature,
+      userId,
+      flightId,
+      bookingDetails
+    });
+
+    // Ensure bookedFlights array exists
+    if (!user.bookedFlights) {
+      user.bookedFlights = [];
+    }
+
+    // Add booking to user
+    user.bookedFlights.push(bookedFlight);
+    await user.save({ session });
+
+    // Commit transaction - all or nothing
+    await session.commitTransaction();
+
+    // Mark payment as successfully processed
+    await markPaymentProcessed(razorpay_payment_id, bookingId);
+
+    console.log('✅ Payment verified and booking confirmed:', bookingId);
+
+    res.status(200).json({ 
+      status: 'success',
+      message: 'Payment verified and booking confirmed successfully',
+      booking_id: bookingId,
+      payment_id: razorpay_payment_id,
+      seats_remaining: flight.seatsAvailable
+    });
     
   } catch (error) {
+    // Rollback transaction on any error
+    await session.abortTransaction();
+    
     console.error('❌ Payment verification error:', error);
+    
+    // Mark payment as failed for recovery
+    await markPaymentFailed(razorpay_payment_id, error.message);
+    
     res.status(500).json({ 
       status: 'failure', 
       error: 'SERVER_ERROR',
       description: 'Payment verification failed due to server error',
       details: error.message 
     });
+  } finally {
+    session.endSession();
   }
 });
 
@@ -865,6 +988,226 @@ app.delete('/users/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting user:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ============================================================================
+// PAYMENT RELIABILITY & MONITORING ENDPOINTS
+// ============================================================================
+
+// Get payment metrics and reliability statistics
+app.get('/api/payment-stats', async (req, res) => {
+  try {
+    const metrics = paymentMonitor.getMetrics();
+    const stats = await getPaymentStats();
+    
+    res.json({
+      realtime: metrics,
+      database: stats,
+      reliability: {
+        meetsThreshold: paymentMonitor.meetsReliabilityThreshold(),
+        targetRate: 99.9,
+        currentRate: metrics.successRate
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching payment stats:', error);
+    res.status(500).json({ error: 'Failed to fetch payment statistics' });
+  }
+});
+
+// Get payment health status and alerts
+app.get('/api/payment-health', async (req, res) => {
+  try {
+    const metrics = paymentMonitor.getMetrics();
+    const alerts = paymentMonitor.getAlerts();
+    const meetsThreshold = paymentMonitor.meetsReliabilityThreshold();
+    
+    res.json({
+      status: meetsThreshold ? 'healthy' : 'degraded',
+      uptime: `${metrics.uptime.toFixed(3)}%`,
+      successRate: `${metrics.successRate.toFixed(3)}%`,
+      alerts: alerts,
+      lastCheck: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Error fetching payment health:', error);
+    res.status(500).json({ error: 'Failed to fetch health status' });
+  }
+});
+
+// Trigger manual payment recovery (admin only)
+app.post('/api/payment-recovery/manual', async (req, res) => {
+  try {
+    console.log('Manual payment recovery triggered...');
+    await recoverOrphanedPayments();
+    
+    const stats = await getPaymentStats();
+    res.json({
+      message: 'Payment recovery completed',
+      stats: stats
+    });
+  } catch (error) {
+    console.error('Error in manual recovery:', error);
+    res.status(500).json({ error: 'Payment recovery failed' });
+  }
+});
+
+// Razorpay webhook for payment status updates (fallback recovery)
+app.post('/razorpay-webhook', async (req, res) => {
+  const session = await mongoose.startSession();
+  
+  try {
+    // Verify webhook signature
+    const webhookSignature = req.headers['x-razorpay-signature'];
+    const webhookSecret = config.razorpay.webhookSecret;
+    
+    if (!webhookSecret) {
+      console.error('Webhook secret not configured');
+      return res.status(500).json({ error: 'Webhook not configured' });
+    }
+    
+    const expectedSignature = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(JSON.stringify(req.body))
+      .digest('hex');
+    
+    if (webhookSignature !== expectedSignature) {
+      console.error('Invalid webhook signature');
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
+    
+    const event = req.body.event;
+    const paymentEntity = req.body.payload.payment.entity;
+    
+    console.log(`Webhook received: ${event} for payment ${paymentEntity.id}`);
+    
+    // Handle payment.captured event
+    if (event === 'payment.captured') {
+      const { id: razorpay_payment_id, order_id: razorpay_order_id, amount } = paymentEntity;
+      
+      // Find the payment log entry to get booking details
+      const paymentLog = await PaymentLog.findOne({ razorpay_payment_id });
+      
+      if (!paymentLog) {
+        console.error(`Payment log not found for ${razorpay_payment_id}`);
+        return res.status(404).json({ error: 'Payment log not found' });
+      }
+      
+      // Get user ID from payment log
+      const userId = paymentLog.metadata?.userId;
+      if (!userId) {
+        console.error(`User ID not found in payment log for ${razorpay_payment_id}`);
+        return res.status(400).json({ error: 'User ID missing in payment log' });
+      }
+      
+      // Start transaction
+      session.startTransaction();
+      
+      // Get user
+      const user = await UserSchema.findById(userId).session(session);
+      if (!user) {
+        await session.abortTransaction();
+        await markPaymentFailed(razorpay_payment_id, 'User not found');
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Check if booking already exists (idempotency)
+      const existingBooking = user.bookedFlights?.find(
+        b => b.paymentDetails?.razorpay_payment_id === razorpay_payment_id
+      );
+      
+      if (existingBooking) {
+        await session.commitTransaction();
+        console.log(`Webhook: Booking already exists for payment ${razorpay_payment_id}`);
+        return res.status(200).json({ received: true, status: 'already_processed' });
+      }
+      
+      // Get flight details
+      const flightId = paymentLog.metadata?.flightId;
+      const passengers = paymentLog.metadata?.passengers || 1;
+      
+      // Update flight seats atomically
+      const flight = await Flight.findOneAndUpdate(
+        {
+          _id: flightId,
+          seatsAvailable: { $gte: passengers }
+        },
+        {
+          $inc: { seatsAvailable: -passengers }
+        },
+        { session, new: true }
+      );
+      
+      if (!flight) {
+        await session.abortTransaction();
+        await markPaymentFailed(razorpay_payment_id, 'No seats available');
+        return res.status(400).json({ error: 'No seats available' });
+      }
+      
+      // Generate booking ID
+      const bookingId = generateUniqueBookingId();
+      
+      // Create booking
+      const bookedFlight = {
+        bookingId: bookingId,
+        flightId: flight._id,
+        flightNumber: flight.flightNumber,
+        from: flight.from,
+        to: flight.to,
+        departureTime: flight.departureTime,
+        arrivalTime: flight.arrivalTime,
+        airline: flight.airline,
+        price: flight.price,
+        nonStop: flight.nonStop,
+        bookingDate: new Date(),
+        passengers: passengers,
+        paymentDetails: {
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature: 'webhook_recovery' // Signature not available in webhook
+        },
+        status: 'CONFIRMED'
+      };
+      
+      // Ensure bookedFlights array exists
+      if (!user.bookedFlights) {
+        user.bookedFlights = [];
+      }
+      
+      // Add booking to user
+      user.bookedFlights.push(bookedFlight);
+      await user.save({ session });
+      
+      // Mark payment as processed
+      await markPaymentProcessed(razorpay_payment_id);
+      
+      // Commit transaction
+      await session.commitTransaction();
+      
+      console.log(`Webhook: Booking created successfully for payment ${razorpay_payment_id}`);
+      res.status(200).json({ received: true, status: 'booking_created' });
+      
+    } else if (event === 'payment.failed') {
+      const { id: razorpay_payment_id, error_description } = paymentEntity;
+      await markPaymentFailed(razorpay_payment_id, error_description || 'Payment failed');
+      res.status(200).json({ received: true, status: 'payment_failed' });
+      
+    } else {
+      // Acknowledge other events
+      res.status(200).json({ received: true, status: 'event_ignored' });
+    }
+    
+  } catch (error) {
+    console.error('Webhook error:', error);
+    
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    
+    res.status(500).json({ error: 'Webhook processing failed' });
+  } finally {
+    session.endSession();
   }
 });
 
