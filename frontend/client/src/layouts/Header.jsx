@@ -1,15 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import {
-  Box,
-  Flex,
-  HStack,
-  Image,
-  Text,
-  Button,
-  useColorModeValue
-} from '@chakra-ui/react';
+import { Box, Flex, HStack, Image, Text, Button, useColorModeValue } from '@chakra-ui/react';
 
 export default function Header() {
   const { setUserInfo, userInfo } = useContext(UserContext);

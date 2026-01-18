@@ -2,47 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from "../../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { generateUniqueBookingId } from "../../utils/bookingUtils";
-import {
-  Box,
-  Container,
-  Heading,
-  VStack,
-  HStack,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  Button,
-  Card,
-  CardBody,
-  Text,
-  Badge,
-  Divider,
-  Grid,
-  GridItem,
-  Switch,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Alert,
-  AlertIcon,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Icon,
-  Flex,
-  useColorModeValue,
-  InputGroup,
-  InputLeftElement,
-  Stack
-} from '@chakra-ui/react';
+import { Box, Container, Heading, VStack, HStack, FormControl, FormLabel, Input, Select, Button, Card, CardBody, Text, Badge, Divider, Grid, GridItem, Switch, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Alert, AlertIcon, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, Icon, Flex, useColorModeValue, InputGroup, InputLeftElement, Stack } from '@chakra-ui/react';
 import { SearchIcon, CalendarIcon, ArrowForwardIcon } from '@chakra-ui/icons';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';

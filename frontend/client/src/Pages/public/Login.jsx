@@ -1,20 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-import {
-  Box,
-  Container,
-  VStack,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Link,
-  useColorModeValue,
-  Center
-} from '@chakra-ui/react';
+import { Box, Container, VStack, Heading, Text, FormControl, FormLabel, Input, Button, Link, useColorModeValue, Center } from '@chakra-ui/react';
 
 export default function Login() {
   const [username, setUsername] = useState('');

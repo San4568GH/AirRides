@@ -1,21 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Grid,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Icon,
-  Button,
-  Circle,
-  useColorModeValue,
-  Badge,
-  Flex
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, Grid, Card, CardBody, VStack, HStack, Icon, Button, Circle, useColorModeValue, Badge, Flex } from '@chakra-ui/react';
 import { AddIcon, ViewIcon, TimeIcon, SettingsIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';

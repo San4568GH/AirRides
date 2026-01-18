@@ -1,23 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  Card,
-  CardBody,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Alert,
-  AlertIcon,
-  useToast,
-  useColorModeValue,
-  HStack,
-  Code
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, VStack, Card, CardBody, Button, FormControl, FormLabel, Input, Alert, AlertIcon, useToast, useColorModeValue, HStack, Code } from '@chakra-ui/react';
 import { CheckIcon, WarningIcon } from '@chakra-ui/icons';
 import { Navigate } from 'react-router-dom';
 

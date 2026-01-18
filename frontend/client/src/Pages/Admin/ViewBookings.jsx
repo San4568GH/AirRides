@@ -1,35 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  HStack,
-  Card,
-  CardBody,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Badge,
-  useToast,
-  useColorModeValue,
-  Alert,
-  AlertIcon,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  Grid,
-  GridItem,
-  Select,
-  Input
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, VStack, HStack, Card, CardBody, Button, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Badge, useToast, useColorModeValue, Alert, AlertIcon, Stat, StatLabel, StatNumber, StatHelpText, Grid, GridItem, Select, Input } from '@chakra-ui/react';
 import { ArrowBackIcon, SearchIcon, ViewIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';

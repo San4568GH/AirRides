@@ -1,44 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Grid,
-  GridItem,
-  Card,
-  CardBody,
-  CardHeader,
-  VStack,
-  HStack,
-  Badge,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  useToast,
-  useColorModeValue,
-  Divider,
-  Flex,
-  Spacer,
-  Icon,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  StatArrow,
-  Spinner,
-  Center
-} from "@chakra-ui/react";
+import { Link } from 'react-router-dom';
+import { Box, Container, Heading, Text, Grid, Card, CardBody, VStack, HStack, Badge, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure, useToast, Divider, Flex, Icon, Alert, AlertIcon } from "@chakra-ui/react";
 import { ArrowForwardIcon, SearchIcon, DownloadIcon, SettingsIcon } from "@chakra-ui/icons";
 import { UserContext } from "../../context/UserContext";
 import { formatBookingReference, getFlightStatus } from "../../utils/bookingUtils";

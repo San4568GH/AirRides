@@ -5,7 +5,17 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0+-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com/)
 [![Chakra UI](https://img.shields.io/badge/Chakra%20UI-2.10+-319795?style=for-the-badge&logo=chakraui&logoColor=white)](https://chakra-ui.com/)
 
+> 📸 **[View Demo Screenshots](./demoimages)** | See the complete application interface and features
+
 A comprehensive **MERN Stack** flight booking web application with advanced admin management, secure payments, and modern UI design.
+
+![Search Home](demoimages/SearchHome.png)
+
+![Admin Page](demoimages/adminpage.png)
+
+![User Bookings](demoimages/DashboardBookings.png)
+
+(PLEASE REFER TO "demoimages" folder for website demo view)
 
 ## 🌟 Key Features
 
@@ -21,6 +31,8 @@ A comprehensive **MERN Stack** flight booking web application with advanced admi
 - **🏙️ City Management** - Add/remove flight destinations
 - **✈️ Flight Management** - Create, edit, and manage flight schedules
 - **📊 Booking Analytics** - View and manage customer bookings
+
+
 
 ## 🛠️ Technology Stack
 

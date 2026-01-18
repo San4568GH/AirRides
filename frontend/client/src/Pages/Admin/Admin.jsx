@@ -1,19 +1,6 @@
 
 import React from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Grid,
-  Card,
-  CardBody,
-  VStack,
-  HStack,
-  Icon,
-  Button,
-  Circle
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, Grid, Card, CardBody, VStack, HStack, Icon, Button, Circle } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import { Link } from 'react-router-dom';
 

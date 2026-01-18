@@ -1,22 +1,7 @@
 // AddCityPage.js
 
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  VStack,
-  Card,
-  CardBody,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Grid,
-  HStack,
-  Icon
-} from '@chakra-ui/react';
+import { Box, Container, Heading, Text, VStack, Card, CardBody, FormControl, FormLabel, Input, Button, Grid, HStack, Icon } from '@chakra-ui/react';
 import { AddIcon } from '@chakra-ui/icons';
 import Cities from './Cities';
 

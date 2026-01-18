@@ -1,19 +1,6 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import {
-  Box,
-  Container,
-  VStack,
-  Heading,
-  Text,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Link,
-  useColorModeValue,
-  Center
-} from '@chakra-ui/react';
+import { Box, Container, VStack, Heading, Text, FormControl, FormLabel, Input, Button, Link, useColorModeValue, Center } from '@chakra-ui/react';
 
 // Code for Register Page
 export default function Register() {

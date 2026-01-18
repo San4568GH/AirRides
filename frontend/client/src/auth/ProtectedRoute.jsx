@@ -1,19 +1,7 @@
 import React, { useContext } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import {
-  Box,
-  Container,
-  VStack,
-  Heading,
-  Text,
-  Button,
-  Alert,
-  AlertIcon,
-  Spinner,
-  useColorModeValue
-} from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Box, Container, VStack, Heading, Text, Button, Alert, AlertIcon, Spinner, useColorModeValue } from '@chakra-ui/react';
 
 const ProtectedRoute = ({ children, requiredRole = 'admin' }) => {
   const { userInfo, isLoading } = useContext(UserContext);
